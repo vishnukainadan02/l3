@@ -1,0 +1,32 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        # Install dependencies
+        - npm ci
+        # Generate Prisma client
+        - npx prisma generate
+    build:
+      commands:
+        # Build the Remix app (creates both client and server)
+        - npm run build
+    postBuild:
+      commands:
+        # Optional: Run any post-build scripts
+        - echo "Build completed successfully"
+  artifacts:
+    # Amplify needs to serve both client assets and server
+    baseDirectory: build
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
+backend:
+  phases:
+    build:
+      commands:
+        # Database migrations (if needed)
+        - npx prisma migrate deploy
